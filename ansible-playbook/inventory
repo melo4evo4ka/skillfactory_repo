@@ -1,0 +1,34 @@
+vm1:
+  hosts: 
+    178.154.200.13
+  vars:
+    os: ubuntu
+vm2:
+  hosts: 
+    158.160.80.156
+  vars:
+    os: ubuntu
+vm3:
+  hosts:
+    158.160.86.115
+  vars:
+    os: centos
+app:
+  children:
+    vm2: 
+    vm3:
+  vars:
+    http_port: 8080
+web:
+  children:
+    vm1:
+  vars:
+    http_port: 8080	
+database: 
+  children: 
+    vm1:
+  vars:
+    db_user: user1
+    db_password: qwerty
+    db_name: myapp
+    db_path_pghba: /etc/postgresql/16/main/pg_hba.conf
