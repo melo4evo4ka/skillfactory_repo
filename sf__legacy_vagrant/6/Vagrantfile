@@ -1,1 +1,43 @@
-config.vm.provision "file", source: "~/.gitconfig", destination: ".gitconfig"
+Vagrant.configure("2") do |config|
+  config.vm.box = "bento/ubuntu-18.04"
+  config.vm.host_name = "ubuntu"
+
+  config.ssh.insert_key = false
+  config.vm.provision "file", source: "./file", destination: "~/file"
+
+  config.vm.provision "shell", inline: <<-SHELL
+    echo "Updating system"
+    sudo apt-get update
+    sudo apt-get -y upgrade
+
+    export DEBIAN_FRONTEND=noninteractive
+    export LANGUAGE=en_US.UTF-8
+    export LANG=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+    locale-gen en_US.UTF-8
+    dpkg-reconfigure locales
+    
+    mkdir my_django_app
+    cd my_django_app
+    
+    echo "Installing packages"
+    sudo apt-get install -y python3-pip build-essential libssl-dev libffi-dev python3-dev 
+    
+    sudo echo "export PATH='usr/bin:$PATH'" >> .bashrc
+    sudo python3 -m pip install --upgrade pip
+    sudo apt-get install python3-psycopg2 python3-venv python3-django	
+   
+    echo "--------------------------"
+    python3 -m venv venv
+    echo "--------------------------"
+    source venv/bin/activate 
+    pip install django
+
+	
+    echo "Successfully installed packages dev virtual machine."
+    echo ""
+
+  SHELL
+  
+end
+
